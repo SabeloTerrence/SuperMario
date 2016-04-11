@@ -2,34 +2,79 @@
 #include<allegro5/allegro.h>
 #include<allegro5/allegro_native_dialog.h>
 #include<allegro5/allegro_image.h>
-#include<allegro5/allegro_primitives.h>
+#include<sstream>
 using namespace std;
 int main(){
 	ALLEGRO_DISPLAY *display;
+	enum direction { UP, LEFT, RIGHT, DUMMY };
+	int dir = DUMMY, index = 0;
 	if (!al_init())
 	{
 		al_show_native_message_box(NULL, NULL, NULL, "Couldn't initialise allegro", NULL, NULL);
 	}
 	display = al_create_display(800, 800);
-	al_set_window_position(display, 200, 200);
-	al_init_image_addon();
-	al_install_keyboard();
-	ALLEGRO_BITMAP *background = al_load_bitmap("WHu9Z.png");
-	ALLEGRO_BITMAP *player = al_load_bitmap("mario_run_cycle1.png");
-	ALLEGRO_TIMER *timer = al_create_timer(0.5);
-	ALLEGRO_EVENT_QUEUE *event = al_create_event_queue();
-	al_register_event_source(event, al_get_keyboard_event_source());
-	al_register_event_source(event, al_get_timer_event_source(timer));
-	al_draw_bitmap(background, 0, 0, NULL);
-	al_draw_bitmap(player, 0, 150, NULL);
 	if (!display)
 	{
 		al_show_native_message_box(NULL, NULL, NULL, "Couldn't initialise allegro", NULL, NULL);
 	}
-	al_flip_display();
-	al_rest(3.0);
-	al_destroy_bitmap(background);
-	al_destroy_bitmap(player);
+	bool done = false, draw = true, active = false;
+	float x = 10, y = 300, speed = 5;
+	ALLEGRO_BITMAP *player[11];
+	al_install_keyboard();
+	al_init_image_addon();
+	for (int i = 0; i<11; i++){
+		stringstream str;
+		str << i + 1 << ".png";
+		player[i] = al_load_bitmap(str.str().c_str());
+	}
+	ALLEGRO_KEYBOARD_STATE state;
+	ALLEGRO_TIMER *timer = al_create_timer(2.0 / 60.0);
+	ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue();
+	al_register_event_source(queue, al_get_timer_event_source(timer));
+	al_register_event_source(queue, al_get_display_event_source(display));
+	al_register_event_source(queue, al_get_keyboard_event_source());
+
+	al_start_timer(timer);
+	while (!done){
+		ALLEGRO_EVENT events;
+		al_wait_for_event(queue, &events);
+		al_get_keyboard_state(&state);
+		if (events.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
+			done = true;
+		}
+		else if (events.type == ALLEGRO_EVENT_TIMER){
+			active = true;
+			//lastDir = dir;
+			if (al_key_down(&state, ALLEGRO_KEY_RIGHT)){
+				x += speed;
+				index++;
+				dir = RIGHT;
+			}
+			if (al_key_down(&state, ALLEGRO_KEY_LEFT)){
+				x -= speed;
+				index--;
+				dir = LEFT;
+			}
+			else{
+				active = false;
+			}
+
+			draw = true;
+			if (draw){
+				if (index > 10){
+					index = 0;
+				}
+				al_draw_bitmap(player[index], x, y, NULL);
+				al_flip_display();
+				al_clear_to_color(al_map_rgb(0, 0, 0));
+			}
+		}
+	}
 	al_destroy_display(display);
+	for (int k = 0; k<11; k++){
+		al_destroy_bitmap(player[k]);
+	}
+	al_destroy_timer(timer);
+	al_destroy_event_queue(queue);
 	return 0;
 }
