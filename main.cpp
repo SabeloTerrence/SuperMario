@@ -28,6 +28,7 @@ int main(){
 	}
 	bool done = false, draw = true, active = false;
 	float x = 10, y = 300, speed = 5;
+	float position[2] = { 0, 0 };
 	ALLEGRO_BITMAP *player[11];
 	al_install_keyboard();
 	al_init_image_addon();
@@ -52,8 +53,6 @@ int main(){
 			done = true;
 		}
 		else if (events.type == ALLEGRO_EVENT_TIMER){
-			active = true;
-			//lastDir = dir;
 			if (al_key_down(&state, ALLEGRO_KEY_RIGHT)){
 				x += speed;
 				index++;
@@ -64,10 +63,7 @@ int main(){
 				index--;
 				dir = LEFT;
 			}
-			else{
-				active = false;
-			}
-
+			update(position, 800, 800, x, y, 35, 35);
 			draw = true;
 			if (draw){
 				if (index > 10){
