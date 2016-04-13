@@ -4,6 +4,15 @@
 #include<allegro5/allegro_image.h>
 #include<sstream>
 using namespace std;
+void update(float *pos,float screenheight,float screenwidth,float xpos,float ypos,float height,float width){
+	pos[0] = -(screenheight / 2) + (xpos + height / 2);
+	pos[1] = -(screenwidth / 2) + (ypos + width / 2);
+
+	if (pos[0] < 0)
+		pos[0] = 0;
+	if (pos[1] < 0)
+		pos[1] = 0;
+}
 int main(){
 	ALLEGRO_DISPLAY *display;
 	enum direction { UP, LEFT, RIGHT, DUMMY };
