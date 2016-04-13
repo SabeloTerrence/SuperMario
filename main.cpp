@@ -1,6 +1,7 @@
 #include<iostream>
 #include<allegro5/allegro.h>
 #include<allegro5/allegro_native_dialog.h>
+#include<allegro5/allegro_primitives.h>
 #include<allegro5/allegro_image.h>
 #include<sstream>
 using namespace std;
@@ -43,7 +44,7 @@ int main(){
 	al_register_event_source(queue, al_get_timer_event_source(timer));
 	al_register_event_source(queue, al_get_display_event_source(display));
 	al_register_event_source(queue, al_get_keyboard_event_source());
-
+	al_draw_rectangle(200,50,)
 	al_start_timer(timer);
 	while (!done){
 		ALLEGRO_EVENT events;
